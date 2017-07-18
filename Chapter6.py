@@ -46,17 +46,21 @@ with tf.Session() as sess:
 
 ##########동물 데이터 분류##########################
 import numpy as np
-xy = np.loadtxt(r'C:\Users\stu\Downloads\zoo2.csv',delimiter=',',usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16),dtype=np.float32)
+xy = np.loadtxt(r'D:\data\zoo2_mod.csv',delimiter=',',dtype=np.float32)
+
 x_data = xy[:, 0:-1]
 y_data = xy[:, [-1]]
+
 nb_classes = 7 #0~6이니까 7개
-X = tf.placeholder(tf.float32,[None,16])
+x_classes = len(x_data[0])
+
+X = tf.placeholder(tf.float32,[None,x_classes])
 Y = tf.placeholder(tf.int32,[None,1])
 
 Y_one_hot = tf.one_hot(Y,nb_classes)
 Y_one_hot = tf.reshape(Y_one_hot,[-1,nb_classes])
 
-W = tf.Variable(tf.random_normal([16,nb_classes]),name='weight')
+W = tf.Variable(tf.random_normal([x_classes,nb_classes]),name='weight')
 b = tf.Variable(tf.random_normal([nb_classes]),name='bias')
 
 logits = tf.matmul(X,W) + b
@@ -73,7 +77,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred,tf.float32))
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
-    for step in range(2000):
+    for step in range(6001):
         sess.run(optimizer,feed_dict={X : x_data, Y : y_data})
         if step % 100 == 0:
             loss,acc = sess.run([cost,accuracy],feed_dict={X:x_data, Y:y_data})
